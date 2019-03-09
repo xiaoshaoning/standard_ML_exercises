@@ -11,16 +11,16 @@
   * 3. A row with the names of the days
   * 4. As many rows as necessary, with the days printed in the proper columns.*)
 
+(* The following codes print a calendar for one year.*)
+
 fun calcBlankNumber(firstDay:string):int =
-if firstDay = "Sun" then 0
-else if firstDay = "Mon" then 1
-else if firstDay = "Tue" then 2
-else if firstDay = "Wed" then 3
-else if firstDay = "Thu" then 4
-else if firstDay = "Fri" then 5
-else if firstDay = "Sat" then 6
-else ~1
-;
+    case firstDay of "Sun" => 0 |
+                     "Mon" => 1 |
+                     "Tue" => 2 |
+                     "Wed" => 3 |
+                     "Thu" => 4 |
+                     "Fri" => 5 |
+                     "Sat" => 6;
 
 fun printBlank(0) = ()
 | printBlank(blankNumber:int):unit = (print("\t"); printBlank(blankNumber-1))
@@ -103,17 +103,68 @@ fun printCalendarLine(firstNumber:int, firstDay:string, lastNumber:int):int =
 (* val  firstNumber = printCalendarLine(1, "Thu", 30); *)
 
 fun printCalendarNumber(firstDay, lastDay) =
-printCalendarLine(
-                 printCalendarLine(
+printCalendarLine(printCalendarLine(
                                    printCalendarLine(
                                                     printCalendarLine(
-                                                                     printCalendarLine(1, firstDay, lastDay),
+                                                                     printCalendarLine(
+                                                                                       printCalendarLine(1, firstDay, lastDay),
+                                                                                       "Sun", lastDay),
                                                                      "Sun", lastDay),
                                                     "Sun", lastDay),
                                    "Sun", lastDay),
                  "Sun", lastDay);
 
-print("\t\t\tSeptermber\n");
-print("\n");
-print("Sun\tMon\tTue\tWed\tThu\tFri\tSat\n");
-printCalendarNumber("Thu", 30);
+fun printCalendarOfOneYear(firstDayOftheYear:string, isLeapYear:bool) =
+let
+    fun getMonthDayNumber(month:string, isLeapYearFlag:bool) =
+    case month of "January"  => 31 |
+                  "February" => if isLeapYearFlag then 29 else 28 |
+                  "March"    => 31 |
+                  "April"    => 30 |
+                  "May"      => 31 |
+                  "June"     => 30 |
+                  "July"     => 31 |
+                  "August"   => 31 |
+                  "September"=> 30 |
+                  "October"  => 31 |
+                  "November" => 30 |
+                  "December" => 31;
+
+    fun printCalendarMonth(month:string, monthDayNumber:int, firstDayOfTheMonth:string) =
+    (print("\t\t\t"^month^"\n\n");
+     print("Sun\tMon\tTue\tWed\tThu\tFri\tSat\n");
+     printCalendarNumber(firstDayOfTheMonth, monthDayNumber);
+     let
+         val temp = calcBlankNumber(firstDayOfTheMonth) + monthDayNumber;
+         fun modSeven(day:int) = day - (day div 7) *7
+     in
+         modSeven(temp)
+     end
+    );
+
+
+    fun getDayInWeek(day:int):string =
+        case day of 0 => "Sun" |
+                    1 => "Mon" |
+                    2 => "Tue" |
+                    3 => "Wed" |
+                    4 => "Thu" |
+                    5 => "Fri" |
+                    6 => "Sat";
+
+    val firstDayOfFeb    = printCalendarMonth("January", getMonthDayNumber("January", isLeapYear), firstDayOftheYear);
+    val firstDayOfMarch  = printCalendarMonth("February", getMonthDayNumber("February", isLeapYear), getDayInWeek(firstDayOfFeb));
+    val firstDayOfApril  = printCalendarMonth("March", getMonthDayNumber("March", isLeapYear), getDayInWeek(firstDayOfMarch));
+    val firstDayOfMay    = printCalendarMonth("April", getMonthDayNumber("April", isLeapYear), getDayInWeek(firstDayOfApril));
+    val firstDayOfJune   = printCalendarMonth("May", getMonthDayNumber("May", isLeapYear), getDayInWeek(firstDayOfMay));
+    val firstDayOfJuly   = printCalendarMonth("June", getMonthDayNumber("June", isLeapYear), getDayInWeek(firstDayOfJune));
+    val firstDayOfAugust = printCalendarMonth("July", getMonthDayNumber("July", isLeapYear), getDayInWeek(firstDayOfJuly));
+    val firstDayOfSep    = printCalendarMonth("August", getMonthDayNumber("August", isLeapYear), getDayInWeek(firstDayOfAugust));
+    val firstDayOfOct    = printCalendarMonth("September", getMonthDayNumber("September", isLeapYear), getDayInWeek(firstDayOfSep));
+    val firstDayOfNov    = printCalendarMonth("October", getMonthDayNumber("October", isLeapYear), getDayInWeek(firstDayOfOct));
+    val firstDayOfDec    = printCalendarMonth("November", getMonthDayNumber("November", isLeapYear), getDayInWeek(firstDayOfNov))
+in
+    printCalendarMonth("December", getMonthDayNumber("December", isLeapYear), getDayInWeek(firstDayOfDec))
+end;
+
+printCalendarOfOneYear("Tue", false); (* The first day of 2019 is Tuesday, and Year 2019 is not a leap year. *)
