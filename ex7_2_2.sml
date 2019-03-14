@@ -1,6 +1,7 @@
 (* Exercise 7.2.2: Write programs to sort an array A of length n, using:
 * a) A simple n^2 time sort such as bubblesort or insertion sort.
-* b) Mergesort.
+* b) Mergesort. Hint: Create temporary arrays and merge from two small arrays
+* into one of twice the size.
 *)
 
 open Array;
@@ -49,3 +50,50 @@ else
     end;
 
 bubbleSort(A);
+
+fun merge(A: int array, B: int array) =
+if length(A) = 0 then B
+else if length(B) = 0 then A
+else
+    let
+        val C = array(length(A)+length(B), 0);
+        val AList = toList(A);
+        val BList = toList(B);
+        val ATailList = tl(AList);
+        val BTailList = tl(BList);
+        val ATailArray = fromList(ATailList);
+        val BTailArray = fromList(BTailList)
+    in
+        if sub(A, 0) <= sub(B, 0) then fromList(sub(A, 0)::toList(merge(ATailArray, B)))
+        else fromList(sub(B, 0)::toList(merge(A, BTailArray)))
+    end;
+
+fun splitList(nil) = ([], [])
+| splitList([x]) = ([x], [])
+| splitList(x::y::xs) =
+    let
+        val (temp1, temp2) = splitList(xs)
+    in
+        (x::temp1, y::temp2)
+    end;
+
+fun splitArray(A: int array) =
+let
+    val AList = toList(A);
+    val (x, y) = splitList(AList)
+in
+    (fromList(x), fromList(y))
+end;
+
+fun mergesort(A:int array) =
+if length(A) = 1 then A
+else
+    let
+        val (B, C) = splitArray(A);
+        val BSorted = mergesort(B);
+        val CSorted = mergesort(C)
+    in
+        merge(BSorted, CSorted)
+    end;
+
+mergesort(A);
