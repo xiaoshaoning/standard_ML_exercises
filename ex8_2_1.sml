@@ -6,9 +6,11 @@
 * 3. find(i, T) finds the ith subtree of the root of tree T and raises the
 * exception Missing if there is no such subtree.*)
 
-datatype tree = Node of string * tree list;
+(* datatype tree = Node of string * tree list; *)
 
 structure Tree = struct
+
+datatype tree = Node of string * tree list;
 
 exception Missing;
 

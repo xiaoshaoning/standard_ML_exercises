@@ -3,9 +3,9 @@
 * Apply function find to obtain the second subtree of the root of your tree.
 *)
 
-datatype ('label) tree = Node of 'label * 'label tree list;
-
 structure Tree = struct
+
+datatype ('label) tree = Node of 'label * 'label tree list;
 
 exception Missing;
 
@@ -28,8 +28,8 @@ end;
 signature SIMPLE =
 sig
     exception Missing
-    val build : int * int tree list -> int tree
-    val find : int * int tree -> int tree
+    val build : int * int Tree.tree list -> int Tree.tree
+    val find : int * int Tree.tree -> int Tree.tree
 end
 
 structure SimpleTree:SIMPLE = Tree;
